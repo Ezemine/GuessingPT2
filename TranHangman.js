@@ -38,7 +38,7 @@ function createElements()
     //     holder.appendChild(button);
     //     button.addClass("letter", "active");
     //     button.addEventListener(click, playGame(this));
-    //     document.querySelector(".buttons").appendChild(holder);
+    //     document.querySelector(".alpha").appendChild(holder);
     // }
     // let letters = document.getElementById("alpha")[0];
     // for (i=65; i <= 90; i++)
