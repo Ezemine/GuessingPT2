@@ -1,18 +1,52 @@
-.button 
+body
 {
-    size: 30px;
+    background-color: #5a2718;
+    color: #868d99;
 }
 
-#myFigure
+.wrapper
 {
-    height:500px;
-    width:300px;
+    text-align: center;
+}
+
+#alpha
+{
+    display: flex;
+    flex-wrap: wrap;
+    width:800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.letters
+{
+    display: inline-block;
+    border-radius: 5px;
+    margin:5px;
+    height: 50px;
+    width: 50px;
+    box-shadow: 6px 3px 3px black;
+    background-color: #800020;
+    color: white;
+}
+
+.letters:disabled
+{
+    opacity: 60%;
+}
+
+#hangPic
+{
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    color: #868d99;
 }
 
 #livesPic
 {
-    height: 250px;
+    height: 400px;
     margin-left: auto;
     margin-right: auto;
-    width: 300px;
+    width: 500px;
 }

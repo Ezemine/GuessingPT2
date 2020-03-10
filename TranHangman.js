@@ -1,6 +1,6 @@
 window.onload = function()
 {
-    this.createElements();
+    createElements();
     askToPlay(true);
 };
 
@@ -15,47 +15,54 @@ const states =
     "Vermont", "Virginia", "Washington", "WestVirginia", "Wisconsin,", "Wyoming"
 ];
 
-var usedGuesses, word = []; //Seperate whole word and characters
+var usedGuesses = [];
+var word = [];
 var guess = [];
 var lives = 6;
 var message = `You have ${lives} guesses left.`;
 
 var image = document.getElementById("livesPic");
 
-var livesPic = ["./images/hang0.png", "./images/hang1.png", "./images/hang2.png",
-                "./images/hang3.png", "./images/hang4.png", "./images/hang5.png", "./images/hang6.png"];
+// var livesPic = new Array(7);
+// for (i=0; i < 7; i++)
+// {
+//     livesPic[i] = new Image();
+//     livesPic[i].src = `./images/hang${i}.png`;
+// }
+// var livesPic = ["./images/hang0.png", "./images/hang1.png", "./images/hang2.png",
+//                 "./images/hang3.png", "./images/hang4.png", "./images/hang5.png", "./images/hang6.png"];
 
 //Create/load letter buttons partial rights go to ostapische on stackoverflow
 function createElements()
 {
     // for (var i = 65; i <= 90; i++ ) 
     // {
-    //     var holder = document.createElement("LI");
+    //     var holder = document.createElement("li");
     //     var letter = String.fromCharCode(i);
-    //     var button = document.createElement("BUTTON");
+    //     var button = document.createElement("button");
     //     button.innerHTML = letter;
     //     button.id = letter;
-    //     holder.appendChild(button);
+    //     holder.append(button);
     //     button.addClass("letter", "active");
-    //     button.addEventListener(click, playGame(this));
-    //     document.querySelector(".alpha").appendChild(holder);
+    //     button.addEventListener(onclick, playGame(this));
+    //     document.querySelector("alpha").append(holder);
     // }
-    // let letters = document.getElementById("alpha")[0];
-    // for (i=65; i <= 90; i++)
-    // {
-    //     let button = document.createElement("button");
-    //     button.innerHTML = String.fromCharCode(i);
-    //     button.addEventListener ("onclick", playGame(button.innerHTML));
-    //     letters.appendChild(button);
-    // }
-    
+    var html = '';
+    var c;
+    for (var i = 65; 90 >= i; i++) 
+    {// A-65, Z-90
+        c = String.fromCharCode(i);
+        html += '<button onclick="checkGuess(\'' + c + '\');" class="letters" id="' + c + '">' + c + '</button>'; //changed from playGame to checkGuess method
+    }
+    document.getElementById('alpha').innerHTML = html;
+        
     refreshLives();
 }
 
 //Create word and user guess
 function createWord()
 {
-    state = states[parseInt(Math.random() * 50 -1)];
+    var state = states[parseInt(Math.random() * 50 -1)];
     word = state.toUpperCase().split("");
     for(i = 0; i < state.length; i++)
     {
@@ -66,79 +73,109 @@ function createWord()
 //Verify if user wants to play
 function askToPlay(first)
 {
-    var play = first == true? confirm("Would you like to play a game of Hangman?") : confirm("Would you like to play again?");
-    if (play == true)
+    setTimeout(function()
     {
-        createWord(); refresh();
-    }
-    else alert("Thanks for playing!");
+        var play = first == true? confirm("Would you like to play a game of Hangman?") : confirm("Would you like to play again?");
+        if (play == true)
+        {
+            refresh(); createWord();
+            refreshLives(); //workaround to display word and lives corrctly
+        }
+        else alert("Thanks for playing!");
+    },20)
 }
 
-playGame = () =>
-{
-    if (usedGuesses.includes(btn.id))
-        message = `You have already
-        guessed this letter. Please try again.\n You have ${lives} guesses left.`; //in keypress instances
-    else
-    {
-        check(btn);
-    }
-}
+// playGame = (btn) => //removed because time constraints with keypress
+// {
+//     if (usedGuesses.includes(btn))
+//     {
+//         message = `You have already
+//         guessed this letter. Please try again.\n You have ${lives} guesses left.`; //in keypress instances
+//     }
+//     else
+//     {
+//         checkGuess(btn);
+//     }
+// }
 
-check = (btn) =>
-{
-    document.getElementById(btn.id).disabled = true; //So that the user is unable to click
-    if (word.includes(btn.id))
+function checkGuess(btn)
+{   
+    btn = btn.toUpperCase();
+    document.getElementById(btn).disabled = "disabled"; //So that the user is unable to click
+    if (word.includes(btn))
     {
         for (i = 0; i < word.length; i++)
         {
-            if (btn.id == word[i])
+            if (btn == word[i])
             {
                 guess[i] = word[i];
             }
         }
         message = `Correct!\n You have ${lives} guesses left.`;
-    }
-    else 
+    } else 
     {
         lives--;
         message = `Incorrect.\n You have ${lives} guesses left.`;
-        refreshLives();
     }
 
-    usedGuess.push(btn.id);
+    refreshLives();
+    // if (lives == 0) //workaround
+    // document.getElementById("livesPic").src = `./images/hang0.png`;
+    usedGuesses.push(btn);
 
-    if (lives == 0 || !word.includes("_"))
-    endGame(lives);
+    if (lives < 1 || word.every(function(value, index) {return value === guess[index]})) //accurately compare arrays
+    {
+        endGame(lives);
+    }
 }
 
 //method starts a new game
 function refresh()
 {
-    guess, word, usedGuesses = [];
+    for (i = 0; i < usedGuesses.length; i++)
+    {
+        document.getElementById(usedGuesses[i]).removeAttribute("disabled"); //Workaround to re-enable buttons upon new game
+    }
+    guess = [];
+    word = [];
+    usedGuesses = [];
     lives = 6;
-    document.getElementsByClassName("letter").disabled = false;
     message = `You have ${lives} guesses left.`;
     refreshLives();
 }
+
 //method changes the hangman picture
 function refreshLives()
 {
-    image.src = livesPic[lives];
-    document.getElementById("myFigure").setAttribute("figCaption", message);
+    document.getElementById("livesPic").src = `./images/hang${lives}.png`;
+    document.getElementById("livesMessage").innerHTML = message;
+    document.getElementById("guess").innerHTML = guessToString();
 }
-
 endGame = (winCondition) =>
 {
-    winCondition == true? alert("Congrats you correctly guessed the state!"): alert("You ran out of lives. Better luck next time!");
+    winMessage = winCondition > 0? "Congrats you correctly guessed the state!": "You ran out of lives. Better luck next time!";
+    if (winCondition > 0) document.getElementById("livesPic").src = `./images/win${lives}.png`;
+    document.getElementById("winMessage").innerHTML = winMessage;
     askToPlay(false);
 }
 
-//allows user to click keypress as well as click onscreen button
-document.addEventListener("keypress", function(e)
-{
-    if (e.keyCode >= 65 || e.keyCode <= 90)
+//Prints out the word
+function guessToString()
+{   
+    var str = "";
+    for (i = 0; i < guess.length; i++)
     {
-        playGame(e.keyCode);
+        str += lives == 0? word[i]: guess[i]; //should output correct word if user runs out of guesses
+        str += " "
     }
-})
+    return str;
+}
+
+//allows user to click keypress as well as click onscreen button
+// document.addEventListener("keypress", function(e) //removed because of time constraints
+// {
+//     if (e.keyCode >= 65 && e.keyCode <= 90)
+//     {
+//         playGame(String.fromCharCode(e.keyCode));
+//     }
+// })
