@@ -15,7 +15,7 @@ const states =
     "Vermont", "Virginia", "Washington", "WestVirginia", "Wisconsin,", "Wyoming"
 ];
 
-var usedGuesses = [];
+var usedGuesses = []; //still useable for workaround to remove disabled
 var word = [];
 var guess = [];
 var lives = 6;
@@ -141,6 +141,7 @@ function refresh()
     usedGuesses = [];
     lives = 6;
     message = `You have ${lives} guesses left.`;
+    document.getElementById("winMessage").innerHTML = '';
     refreshLives();
 }
 
